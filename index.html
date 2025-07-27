@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ff9f1c" />
+  <title>BattleZone Esports — PUBG Mobile Tournaments</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <div class="brand">
+        <img src="assets/img/logo.png" alt="logo" class="logo" />
+        <span>BattleZone <strong>Esports</strong></span>
+      </div>
+      <nav class="nav">
+        <a href="#home" data-section="home" class="nav-link active">Home</a>
+        <a href="#events" data-section="events" class="nav-link">Events</a>
+        <a href="#rules" data-section="rules" class="nav-link">Rules</a>
+        <a href="#register" data-section="register" class="nav-link">Register</a>
+        <a href="#leaderboard" data-section="leaderboard" class="nav-link">Leaderboard</a>
+        <a href="#faq" data-section="faq" class="nav-link">FAQ</a>
+        <a href="#contact" data-section="contact" class="nav-link btn btn-small">Contact</a>
+      </nav>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section id="home" class="section hero">
+    <div class="hero-content">
+      <h1 class="glitch" data-text="PUBG TOURNAMENTS">PUBG TOURNAMENTS</h1>
+      <p class="subtitle">Custom Rooms • Daily Scrims • Cash Prizes • Pro Hosting</p>
+      <div class="cta-group">
+        <a href="#events" class="btn btn-primary">Upcoming Events</a>
+        <a href="#register" class="btn btn-outline">Register Team</a>
+      </div>
+      <div class="scroll-indicator">Scroll</div>
+    </div>
+    <div class="parallax parallax-1"></div>
+    <div class="parallax parallax-2"></div>
+    <div class="parallax parallax-3"></div>
+  </section>
+
+  <!-- EVENTS -->
+  <section id="events" class="section">
+    <div class="container">
+      <h2 class="section-title reveal">Upcoming Events</h2>
+      <div id="events-grid" class="events-grid"></div>
+    </div>
+  </section>
+
+  <!-- RULES -->
+  <section id="rules" class="section dark">
+    <div class="container">
+      <h2 class="section-title reveal">Rules & Format</h2>
+      <ul class="rules-list reveal">
+        <li>Team size: <strong>4 players</strong> (no more, no less).</li>
+        <li>Emulators are <strong>not allowed</strong> unless specified.</li>
+        <li>Hacks, scripts, mods = <strong>permanent ban</strong>.</li>
+        <li>Room ID & Password will be shared 10 minutes before the match.</li>
+        <li>Stream sniping / teaming is prohibited.</li>
+        <li>Organizer’s decision is final.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- REGISTER -->
+  <section id="register" class="section">
+    <div class="container">
+      <h2 class="section-title reveal">Team Registration</h2>
+      <p class="muted reveal">Fill out all fields. Team must have exactly 4 members. After paying via UPI, paste your Transaction ID/UTR.</p>
+
+      <form id="regForm" class="reg-form reveal" novalidate>
+        <div class="form-group">
+          <label for="eventId">Select Event</label>
+          <select id="eventId" required></select>
+        </div>
+        <div class="form-group">
+          <label for="teamName">Team Name</label>
+          <input type="text" id="teamName" placeholder="Enter team name" required />
+        </div>
+        <div class="players">
+          <h3>Players (4 required)</h3>
+          <div class="player-row">
+            <input type="text" placeholder="Player 1 Name" class="player-name" required />
+            <input type="text" placeholder="Player 1 PUBG ID" class="player-id" required />
+          </div>
+          <div class="player-row">
+            <input type="text" placeholder="Player 2 Name" class="player-name" required />
+            <input type="text" placeholder="Player 2 PUBG ID" class="player-id" required />
+          </div>
+          <div class="player-row">
+            <input type="text" placeholder="Player 3 Name" class="player-name" required />
+            <input type="text" placeholder="Player 3 PUBG ID" class="player-id" required />
+          </div>
+          <div class="player-row">
+            <input type="text" placeholder="Player 4 Name" class="player-name" required />
+            <input type="text" placeholder="Player 4 PUBG ID" class="player-id" required />
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="example@mail.com" required />
+          </div>
+          <div class="form-group">
+          <label for="phone">Phone (WhatsApp)</label>
+          <input type="tel" id="phone" placeholder="10-digit number" pattern="[0-9]{10}" required />
+        </div>
+        </div>
+        <div class="form-group">
+          <label>Entry Fee</label>
+          <p class="fee" id="entryFee">—</p>
+          <a href="payment.html" target="_blank" class="btn btn-small">Pay Now (UPI)</a>
+        </div>
+        <div class="form-group">
+          <label for="txnId">UPI Transaction ID / UTR</label>
+          <input type="text" id="txnId" placeholder="Paste after payment" required />
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Submit Registration</button>
+        </div>
+        <p class="form-note">Your data is stored locally & also sent to the organizer (client-side only demo). For production, connect to a backend or Google Sheets API.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- LEADERBOARD / RESULTS (Static placeholder) -->
+  <section id="leaderboard" class="section dark">
+    <div class="container">
+      <h2 class="section-title reveal">Results & Leaderboard</h2>
+      <div class="table-wrap reveal">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Team</th>
+              <th>Kills</th>
+              <th>Placement</th>
+              <th>Points</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody">
+            <!-- Dynamically fill if you wish; static demo below -->
+            <tr>
+              <td>1</td>
+              <td>Sample Team</td>
+              <td>25</td>
+              <td>1</td>
+              <td>45</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="section">
+    <div class="container">
+      <h2 class="section-title reveal">FAQ</h2>
+      <div class="accordion" id="faqAcc">
+        <div class="acc-item reveal">
+          <button class="acc-header">How do I pay the entry fee?</button>
+          <div class="acc-body">Use the UPI given on the payment page. Paste your UTR/Transaction ID in the form.</div>
+        </div>
+        <div class="acc-item reveal">
+          <button class="acc-header">When will I get the room ID & password?</button>
+          <div class="acc-body">10 minutes before the match on WhatsApp/Discord.</div>
+        </div>
+        <div class="acc-item reveal">
+          <button class="acc-header">Can I edit my team after submission?</button>
+          <div class="acc-body">Contact the organizer. Changes are allowed only before the final list is published.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section dark">
+    <div class="container">
+      <h2 class="section-title reveal">Contact</h2>
+      <div class="contact-grid reveal">
+        <div>
+          <h3>Organizer</h3>
+          <p><strong>BattleZone Esports</strong><br/>Email: support@battlezone.gg<br/>Phone/WhatsApp: +91 99999 99999</p>
+          <div class="socials">
+            <a href="#" aria-label="Discord">Discord</a>
+            <a href="#" aria-label="Instagram">Instagram</a>
+            <a href="#" aria-label="YouTube">YouTube</a>
+          </div>
+        </div>
+        <div>
+          <h3>Location</h3>
+          <p>India (online tournaments)</p>
+        </div>
+      </div>
+      <p class="disclaimer">PUBG® / PUBG MOBILE® are trademarks of their respective owners. This is an independent fan/organizer site.</p>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> BattleZone Esports • All rights reserved.</p>
+      <a href="admin.html" class="admin-link">Admin</a>
+    </div>
+  </footer>
+
+  <div id="toast"></div>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

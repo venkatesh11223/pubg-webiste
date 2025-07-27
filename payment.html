@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pay Entry Fee — BattleZone Esports</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    body { padding-top: 40px; }
+    .pay-box { max-width: 520px; margin: 0 auto; text-align: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 1.2rem; border-radius: 10px; }
+    .upi { font-size: 1.4rem; font-weight: 700; color: var(--accent); word-break: break-all; }
+    .qr { margin: 1rem auto; width: 220px; height: 220px; background: #fff; display: flex; align-items: center; justify-content: center; }
+    canvas { max-width: 100%; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Pay Entry Fee</h1>
+    <div class="pay-box">
+      <p>Send the exact entry fee to the following UPI ID:</p>
+      <p class="upi" id="upiId">yourupi@oksbi</p>
+      <p>Account Name: <strong>BattleZone Esports</strong></p>
+      <div class="qr" id="qr"></div>
+      <p class="muted">After payment, copy your <strong>Transaction ID/UTR</strong> and paste it in the registration form.</p>
+      <a href="index.html#register" class="btn btn-primary">Back to Registration</a>
+    </div>
+  </div>
+  <script>
+    const upiId = 'yourupi@oksbi'; // replace
+    const name = 'BattleZone Esports';
+    const amount = ''; // leave blank; users will pay per event fee
+    const note = 'PUBG Entry Fee';
+
+    // Build standard UPI intent link
+    const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent(note)}`;
+
+    document.getElementById('upiId').textContent = upiId;
+
+    // Tiny QR (no external libs): Use canvas & a minimal QR generator? (Too big). For static demo, show link.
+    // If you want QR, you can include lightweight QR lib (qrcode.min.js) locally and render here.
+
+    const qrDiv = document.getElementById('qr');
+    const link = document.createElement('a');
+    link.href = upiUrl;
+    link.textContent = 'Click to Pay via UPI Apps';
+    link.className = 'btn btn-outline';
+    qrDiv.appendChild(link);
+  </script>
+</body>
+</html>

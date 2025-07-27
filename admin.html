@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin – Registrations</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    body { padding-top: 40px; }
+    table td pre { white-space: pre-wrap; word-break: break-word; }
+    .controls { display: flex; gap: .5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Registrations (LocalStorage)</h1>
+    <div class="controls">
+      <button class="btn btn-outline" id="refresh">Refresh</button>
+      <button class="btn btn-primary" id="exportCsv">Export CSV</button>
+      <button class="btn btn-outline" id="clear">Clear All (Local)</button>
+    </div>
+    <div class="table-wrap">
+      <table class="table" id="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Event</th>
+            <th>Team</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Txn</th>
+            <th>Members</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const KEY = 'bz_registrations';
+
+    function load(){
+      return JSON.parse(localStorage.getItem(KEY) || '[]');
+    }
+
+    function render(){
+      const data = load();
+      const tbody = document.querySelector('#table tbody');
+      tbody.innerHTML = data.map((r, i)=>{
+        const members = r.members.map(m=> `${m.name} (${m.pubgId})`).join('\n');
+        return `<tr>
+          <td>${i+1}</td>
+          <td>${r.eventTitle}</td>
+          <td>${r.teamName}</td>
+          <td>${r.phone}</td>
+          <td>${r.email}</td>
+          <td>${r.txnId}</td>
+          <td><pre>${members}</pre></td>
+          <td>${new Date(r.timestamp).toLocaleString()}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function exportCSV(){
+      const data = load();
+      const header = ['id','timestamp','eventId','eventTitle','fee','teamName','email','phone','txnId','members'];
+      const rows = [header.join(',')].concat(
+        data.map(d => {
+          const members = d.members.map(m=>`${m.name}(${m.pubgId})`).join('|');
+          return [d.id,d.timestamp,d.eventId,d.eventTitle,d.fee,d.teamName,d.email,d.phone,d.txnId,members]
+            .map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',');
+        })
+      );
+      const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'registrations.csv'; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    document.getElementById('refresh').addEventListener('click', render);
+    document.getElementById('exportCsv').addEventListener('click', exportCSV);
+    document.getElementById('clear').addEventListener('click', ()=>{
+      if(confirm('Clear all local registrations?')){
+        localStorage.removeItem(KEY);
+        render();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
