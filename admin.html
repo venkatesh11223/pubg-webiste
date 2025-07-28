@@ -1,95 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="bg-black text-white font-[Rajdhani] scroll-smooth">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin – Registrations</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-  <style>
-    body { padding-top: 40px; }
-    table td pre { white-space: pre-wrap; word-break: break-word; }
-    .controls { display: flex; gap: .5rem; margin-bottom: 1rem; flex-wrap: wrap; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - BattleZone Esports</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+  <!-- Custom Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js" defer></script>
+
+  <!-- Admin Logic -->
+  <script src="admin.js" defer></script>
 </head>
-<body>
-  <div class="container">
-    <h1>Registrations (LocalStorage)</h1>
-    <div class="controls">
-      <button class="btn btn-outline" id="refresh">Refresh</button>
-      <button class="btn btn-primary" id="exportCsv">Export CSV</button>
-      <button class="btn btn-outline" id="clear">Clear All (Local)</button>
+
+<body class="min-h-screen bg-gradient-to-b from-black via-zinc-900 to-black text-white flex items-center justify-center p-6">
+
+  <div class="w-full max-w-4xl bg-zinc-900 border border-zinc-700 p-8 rounded-xl shadow-xl animate-fade-in">
+
+    <h1 class="text-4xl font-bold text-center text-accent mb-8">Admin Dashboard</h1>
+
+    <!-- LOGIN SECTION -->
+    <div id="login-section" class="space-y-4">
+      <h2 class="text-2xl font-semibold text-center">Enter Admin Password</h2>
+      <input type="password" id="adminPass"
+        class="w-full px-4 py-2 rounded bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-accent"
+        placeholder="Enter password" />
+      <button onclick="checkAdminLogin()"
+        class="w-full bg-accent hover:bg-accent-dark text-black font-bold py-2 rounded transition duration-200">
+        Login
+      </button>
+      <p id="loginError" class="text-red-500 text-center text-sm"></p>
     </div>
-    <div class="table-wrap">
-      <table class="table" id="table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Event</th>
-            <th>Team</th>
-            <th>Phone</th>
-            <th>Email</th>
-            <th>Txn</th>
-            <th>Members</th>
-            <th>Time</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+
+    <!-- DASHBOARD SECTION -->
+    <div id="dashboard" class="hidden mt-8 space-y-6">
+      <div class="flex justify-between items-center">
+        <h3 class="text-2xl font-semibold">Registered Teams</h3>
+        <button onclick="exportToCSV()"
+          class="bg-accent hover:bg-accent-dark text-black font-bold py-2 px-4 rounded transition duration-200">
+          Export to CSV
+        </button>
+      </div>
+      <div id="teamsTable" class="overflow-auto max-h-[60vh] rounded border border-zinc-700 bg-zinc-800 p-4"></div>
     </div>
+
   </div>
 
-  <script>
-    const KEY = 'bz_registrations';
-
-    function load(){
-      return JSON.parse(localStorage.getItem(KEY) || '[]');
+  <!-- Accent Colors (inspired by your theme) -->
+  <style>
+    .text-accent {
+      color: #ff9f1c;
     }
 
-    function render(){
-      const data = load();
-      const tbody = document.querySelector('#table tbody');
-      tbody.innerHTML = data.map((r, i)=>{
-        const members = r.members.map(m=> `${m.name} (${m.pubgId})`).join('\n');
-        return `<tr>
-          <td>${i+1}</td>
-          <td>${r.eventTitle}</td>
-          <td>${r.teamName}</td>
-          <td>${r.phone}</td>
-          <td>${r.email}</td>
-          <td>${r.txnId}</td>
-          <td><pre>${members}</pre></td>
-          <td>${new Date(r.timestamp).toLocaleString()}</td>
-        </tr>`;
-      }).join('');
+    .bg-accent {
+      background-color: #ff9f1c;
     }
 
-    function exportCSV(){
-      const data = load();
-      const header = ['id','timestamp','eventId','eventTitle','fee','teamName','email','phone','txnId','members'];
-      const rows = [header.join(',')].concat(
-        data.map(d => {
-          const members = d.members.map(m=>`${m.name}(${m.pubgId})`).join('|');
-          return [d.id,d.timestamp,d.eventId,d.eventTitle,d.fee,d.teamName,d.email,d.phone,d.txnId,members]
-            .map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',');
-        })
-      );
-      const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'registrations.csv'; a.click();
-      URL.revokeObjectURL(url);
+    .hover\:bg-accent-dark:hover {
+      background-color: #cc7f14;
     }
 
-    document.getElementById('refresh').addEventListener('click', render);
-    document.getElementById('exportCsv').addEventListener('click', exportCSV);
-    document.getElementById('clear').addEventListener('click', ()=>{
-      if(confirm('Clear all local registrations?')){
-        localStorage.removeItem(KEY);
-        render();
+    .animate-fade-in {
+      animation: fade-in 0.8s ease-out forwards;
+    }
+
+    @keyframes fade-in {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
       }
-    });
 
-    render();
-  </script>
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </body>
+
 </html>

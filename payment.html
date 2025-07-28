@@ -1,50 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pay Entry Fee — BattleZone Esports</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pay Entry Fee - BattleZone Esports</title>
+  <link rel="stylesheet" href="styles.css" />
   <style>
-    body { padding-top: 40px; }
-    .pay-box { max-width: 520px; margin: 0 auto; text-align: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 1.2rem; border-radius: 10px; }
-    .upi { font-size: 1.4rem; font-weight: 700; color: var(--accent); word-break: break-all; }
-    .qr { margin: 1rem auto; width: 220px; height: 220px; background: #fff; display: flex; align-items: center; justify-content: center; }
-    canvas { max-width: 100%; }
+    body {
+      margin: 0;
+      font-family: var(--font, 'Poppins', sans-serif);
+      background: #0d0d0d;
+      color: white;
+      position: relative;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .payment-container {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 3rem 1rem;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      animation: fadeIn 1.2s ease forwards;
+    }
+
+    .payment-box {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+      animation: popIn 0.9s ease forwards;
+    }
+
+    .upi-box {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .copy-btn {
+      background: var(--accent);
+      color: #000;
+      padding: 0.4rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-dark);
+    }
+
+    .return-link {
+      margin-top: 2rem;
+      display: inline-block;
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    canvas#bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    @media (max-width: 480px) {
+      .payment-box {
+        padding: 1.5rem;
+      }
+
+      .upi-box {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes popIn {
+      0% {
+        transform: scale(0.95);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>Pay Entry Fee</h1>
-    <div class="pay-box">
-      <p>Send the exact entry fee to the following UPI ID:</p>
-      <p class="upi" id="upiId">yourupi@oksbi</p>
-      <p>Account Name: <strong>BattleZone Esports</strong></p>
-      <div class="qr" id="qr"></div>
-      <p class="muted">After payment, copy your <strong>Transaction ID/UTR</strong> and paste it in the registration form.</p>
-      <a href="index.html#register" class="btn btn-primary">Back to Registration</a>
+  <canvas id="bg-canvas"></canvas>
+  <div class="payment-container">
+    <h1 class="glitch" data-text="Pay Entry Fee">Pay Entry Fee</h1>
+    <div class="payment-box">
+      <p>Please pay the exact entry fee before submitting your registration form.</p>
+      <p><strong>Entry Fee:</strong> <span id="entryFee">Loading...</span></p>
+      <div class="upi-box">
+        <span id="upiId">battlezone@upi</span>
+        <button class="copy-btn" onclick="copyUPI()">Copy</button>
+      </div>
+      <p>After successful payment, return and paste your UPI transaction ID.</p>
+      <a href="index.html#register" class="return-link" onclick="localStorage.setItem('returning_from_payment', '1')">
+        ← Return to Registration
+      </a>
+
     </div>
   </div>
+
   <script>
-    const upiId = 'yourupi@oksbi'; // replace
-    const name = 'BattleZone Esports';
-    const amount = ''; // leave blank; users will pay per event fee
-    const note = 'PUBG Entry Fee';
+    const canvas = document.getElementById("bg-canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    let particles = [];
 
-    // Build standard UPI intent link
-    const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent(note)}`;
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
+    });
 
-    document.getElementById('upiId').textContent = upiId;
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.speedY = (Math.random() - 0.5) * 0.3;
+        this.alpha = Math.random() * 0.6 + 0.2;
+        this.color = `rgba(255,159,28,${this.alpha})`;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (
+          this.x < 0 ||
+          this.x > canvas.width ||
+          this.y < 0 ||
+          this.y > canvas.height
+        ) {
+          this.reset();
+        }
+      }
+      draw() {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
 
-    // Tiny QR (no external libs): Use canvas & a minimal QR generator? (Too big). For static demo, show link.
-    // If you want QR, you can include lightweight QR lib (qrcode.min.js) locally and render here.
+    function initParticles() {
+      particles = [];
+      const count = Math.min(180, Math.floor(canvas.width * canvas.height / 8000));
+      for (let i = 0; i < count; i++) particles.push(new Particle());
+    }
+    initParticles();
 
-    const qrDiv = document.getElementById('qr');
-    const link = document.createElement('a');
-    link.href = upiUrl;
-    link.textContent = 'Click to Pay via UPI Apps';
-    link.className = 'btn btn-outline';
-    qrDiv.appendChild(link);
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p) => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    function copyUPI() {
+      const upi = document.getElementById("upiId").textContent;
+      navigator.clipboard.writeText(upi).then(() => {
+        alert("UPI ID copied!");
+      });
+    }
+
+    const selectedEventId = localStorage.getItem("selected_event_id");
+    if (selectedEventId) {
+      const events = [
+        {
+          id: 'ev1',
+          title: 'PUBG Mobile Squad Cup',
+          entryFee: 200
+        },
+        {
+          id: 'ev2',
+          title: 'PUBG Mobile Scrims — Friday Rush',
+          entryFee: 100
+        }
+      ];
+      const found = events.find(e => e.id === selectedEventId);
+      document.getElementById("entryFee").textContent = found ? `₹${found.entryFee}` : '₹100';
+    } else {
+      document.getElementById("entryFee").textContent = '₹100';
+    }
   </script>
 </body>
+
 </html>

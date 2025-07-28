@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,13 +11,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
+
 <body>
   <canvas id="bg-canvas"></canvas>
   <header class="site-header" id="top">
     <div class="container header-inner">
       <div class="brand">
-        <img src="assets/img/logo.png" alt="logo" class="logo" />
-        <span>BattleZone <strong>Esports</strong></span>
+        <img src="./assets/img/logo.jpeg" alt="KA BGMI Logo" class="logo" />
+        <span>KA-BGMI <strong>TOURNAMENTS</strong></span>
       </div>
       <nav class="nav">
         <a href="#home" data-section="home" class="nav-link active">Home</a>
@@ -26,6 +28,8 @@
         <a href="#leaderboard" data-section="leaderboard" class="nav-link">Leaderboard</a>
         <a href="#faq" data-section="faq" class="nav-link">FAQ</a>
         <a href="#contact" data-section="contact" class="nav-link btn btn-small">Contact</a>
+        <a href="admin.html" class="nav-link btn btn-small" style="background: var(--accent); color: #000;">Admin
+          Login</a>
       </nav>
       <button class="hamburger" id="hamburger" aria-label="Menu">
         <span></span><span></span><span></span>
@@ -36,7 +40,7 @@
   <!-- HERO -->
   <section id="home" class="section hero">
     <div class="hero-content">
-      <h1 class="glitch" data-text="PUBG TOURNAMENTS">PUBG TOURNAMENTS</h1>
+      <h1 class="glitch" data-text="KA-BGMI TOURNAMENTS">KA-BGMI TOURNAMENTS</h1>
       <p class="subtitle">Custom Rooms • Daily Scrims • Cash Prizes • Pro Hosting</p>
       <div class="cta-group">
         <a href="#events" class="btn btn-primary">Upcoming Events</a>
@@ -48,6 +52,7 @@
     <div class="parallax parallax-2"></div>
     <div class="parallax parallax-3"></div>
   </section>
+
 
   <!-- EVENTS -->
   <section id="events" class="section">
@@ -75,10 +80,11 @@
   <!-- REGISTER -->
   <section id="register" class="section">
     <div class="container">
-      <h2 class="section-title reveal">Team Registration</h2>
-      <p class="muted reveal">Fill out all fields. Team must have exactly 4 members. After paying via UPI, paste your Transaction ID/UTR.</p>
+      <h2 class="section-title">Team Registration</h2>
+      <p class="muted">Fill out all fields. Team must have exactly 4 members. After paying via UPI, paste your
+        Transaction ID/UTR.</p>
 
-      <form id="regForm" class="reg-form reveal" novalidate>
+      <form id="regForm" class="reg-form" novalidate>
         <div class="form-group">
           <label for="eventId">Select Event</label>
           <select id="eventId" required></select>
@@ -112,14 +118,14 @@
             <input type="email" id="email" placeholder="example@mail.com" required />
           </div>
           <div class="form-group">
-          <label for="phone">Phone (WhatsApp)</label>
-          <input type="tel" id="phone" placeholder="10-digit number" pattern="[0-9]{10}" required />
-        </div>
+            <label for="phone">Phone (WhatsApp)</label>
+            <input type="tel" id="phone" placeholder="10-digit number" pattern="[0-9]{10}" required />
+          </div>
         </div>
         <div class="form-group">
           <label>Entry Fee</label>
           <p class="fee" id="entryFee">—</p>
-          <a href="payment.html" target="_blank" class="btn btn-small">Pay Now (UPI)</a>
+          <a href="payment.html" class="btn btn-small" onclick="saveSelectedEvent()">Pay Now (UPI)</a>
         </div>
         <div class="form-group">
           <label for="txnId">UPI Transaction ID / UTR</label>
@@ -128,12 +134,14 @@
         <div class="form-group">
           <button type="submit" class="btn btn-primary">Submit Registration</button>
         </div>
-        <p class="form-note">Your data is stored locally & also sent to the organizer (client-side only demo). For production, connect to a backend or Google Sheets API.</p>
+        <p class="form-note">Your data is now sent securely.</p>
       </form>
+
+      <div id="toast" class="toast"></div>
     </div>
   </section>
 
-  <!-- LEADERBOARD / RESULTS (Static placeholder) -->
+  <!-- LEADERBOARD / RESULTS -->
   <section id="leaderboard" class="section dark">
     <div class="container">
       <h2 class="section-title reveal">Results & Leaderboard</h2>
@@ -149,7 +157,6 @@
             </tr>
           </thead>
           <tbody id="leaderboardBody">
-            <!-- Dynamically fill if you wish; static demo below -->
             <tr>
               <td>1</td>
               <td>Sample Team</td>
@@ -178,7 +185,8 @@
         </div>
         <div class="acc-item reveal">
           <button class="acc-header">Can I edit my team after submission?</button>
-          <div class="acc-body">Contact the organizer. Changes are allowed only before the final list is published.</div>
+          <div class="acc-body">Contact the organizer. Changes are allowed only before the final list is published.
+          </div>
         </div>
       </div>
     </div>
@@ -191,10 +199,13 @@
       <div class="contact-grid reveal">
         <div>
           <h3>Organizer</h3>
-          <p><strong>BattleZone Esports</strong><br/>Email: support@battlezone.gg<br/>Phone/WhatsApp: +91 99999 99999</p>
+          <p><strong>KA-BGMI TOURNAMENTS</strong><br />Email: kabgmitournament@gmail.com<br />Phone/WhatsApp: +91
+            7975088072
+          </p>
           <div class="socials">
             <a href="#" aria-label="Discord">Discord</a>
-            <a href="#" aria-label="Instagram">Instagram</a>
+            <a href="https://www.instagram.com/yadgirigamers?igsh=MWlxbmc2dHZrYzVuOQ=="
+              aria-label="Instagram">Instagram</a>
             <a href="#" aria-label="YouTube">YouTube</a>
           </div>
         </div>
@@ -203,19 +214,31 @@
           <p>India (online tournaments)</p>
         </div>
       </div>
-      <p class="disclaimer">PUBG® / PUBG MOBILE® are trademarks of their respective owners. This is an independent fan/organizer site.</p>
+      <p class="disclaimer">BGMI® / BGMI® are trademarks of their respective owners. This is an independent
+        fan/organizer site.</p>
     </div>
   </section>
 
   <footer class="site-footer">
     <div class="container">
-      <p>© <span id="year"></span> BattleZone Esports • All rights reserved.</p>
+      <p>© <span id="year"></span> KA-BGMI TOURNAMENTS • All rights reserved.</p>
       <a href="admin.html" class="admin-link">Admin</a>
     </div>
   </footer>
 
   <div id="toast"></div>
 
+  <script>
+    function saveSelectedEvent() {
+      const eventSelect = document.getElementById("eventId");
+      if (eventSelect && eventSelect.value) {
+        localStorage.setItem("selected_event_id", eventSelect.value);
+      }
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/js/app.js"></script>
 </body>
+
 </html>
