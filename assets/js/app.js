@@ -48,14 +48,14 @@ const events = [
 ];
 
 // ====== DOM ======
-const eventsGrid   = document.getElementById('events-grid');
-const eventSelect  = document.getElementById('eventId');
-const entryFeeEl   = document.getElementById('entryFee');
-const regForm      = document.getElementById('regForm');
-const toastEl      = document.getElementById('toast');
-const yearEl       = document.getElementById('year');
-const nav          = document.querySelector('.nav');
-const hamburger    = document.getElementById('hamburger');
+const eventsGrid = document.getElementById('events-grid');
+const eventSelect = document.getElementById('eventId');
+const entryFeeEl = document.getElementById('entryFee');
+const regForm = document.getElementById('regForm');
+const toastEl = document.getElementById('toast');
+const yearEl = document.getElementById('year');
+const nav = document.querySelector('.nav');
+const hamburger = document.getElementById('hamburger');
 
 // Canvas (guard if not present)
 const canvas = document.getElementById('bg-canvas');
@@ -68,14 +68,14 @@ const FORM_STORAGE_KEY = 'bz_reg_form_draft';
 function saveDraft() {
   if (!regForm) return;
 
-  const evId     = eventSelect?.value || '';
+  const evId = eventSelect?.value || '';
   const teamName = document.getElementById('teamName')?.value || '';
-  const email    = document.getElementById('email')?.value || '';
-  const phone    = document.getElementById('phone')?.value || '';
-  const txnId    = document.getElementById('txnId')?.value || '';
+  const email = document.getElementById('email')?.value || '';
+  const phone = document.getElementById('phone')?.value || '';
+  const txnId = document.getElementById('txnId')?.value || '';
 
   const playerNames = Array.from(document.querySelectorAll('.player-name')).map(i => i.value || '');
-  const playerIds   = Array.from(document.querySelectorAll('.player-id')).map(i => i.value || '');
+  const playerIds = Array.from(document.querySelectorAll('.player-id')).map(i => i.value || '');
 
   const draft = { evId, teamName, email, phone, txnId, playerNames, playerIds };
   localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(draft));
@@ -94,9 +94,9 @@ function restoreDraft() {
       handleEntryFee();
     }
     if (d.teamName) document.getElementById('teamName').value = d.teamName;
-    if (d.email)    document.getElementById('email').value = d.email;
-    if (d.phone)    document.getElementById('phone').value = d.phone;
-    if (d.txnId)    document.getElementById('txnId').value = d.txnId;
+    if (d.email) document.getElementById('email').value = d.email;
+    if (d.phone) document.getElementById('phone').value = d.phone;
+    if (d.txnId) document.getElementById('txnId').value = d.txnId;
 
     const pn = Array.from(document.querySelectorAll('.player-name'));
     const pi = Array.from(document.querySelectorAll('.player-id'));
@@ -277,16 +277,17 @@ if (regForm) {
   regForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const evId     = eventSelect.value;
-    const evData   = events.find(e => e.id === evId);
+    const evId = eventSelect.value;
+    const evData = events.find(e => e.id === evId);
     const teamName = document.getElementById('teamName').value.trim();
-    const email    = document.getElementById('email').value.trim();
-    const phone    = document.getElementById('phone').value.trim();
-    const txnId    = document.getElementById('txnId').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const txnId = document.getElementById('txnId').value.trim();
 
     const playerNames = Array.from(document.querySelectorAll('.player-name')).map(i => i.value.trim());
-    const playerIds   = Array.from(document.querySelectorAll('.player-id')).map(i => i.value.trim());
+    const playerIds = Array.from(document.querySelectorAll('.player-id')).map(i => i.value.trim());
 
+    // Form validation
     if (!evId) return showToast('Please select an event', 'error');
     if (!teamName) return showToast('Enter team name', 'error');
     if (playerNames.some(n => !n) || playerIds.some(id => !id)) return showToast('Fill all player names & IDs', 'error');
@@ -297,32 +298,106 @@ if (regForm) {
 
     const members = playerNames.map((name, i) => ({ name, pubg_id: playerIds[i] }));
 
-    const payload = {
-      team_name: teamName,
-      event_id: evId,
-      event_title: evData.title,
-      email,
-      phone,
-      txn_id: txnId,
-      fee: evData.entryFee,
-      members,
-      created_at: new Date().toISOString(),
-      status: 'pending'
-    };
+    try {
+      // Check for existing team name (case-sensitive)
+      const { data: existingTeam, error: existingTeamError } = await supabase
+        .from('teams')
+        .select('team_name')
+        .eq('event_id', evId)
+        .eq('team_name', teamName)
+        .maybeSingle();
 
-    const { error } = await supabase.from('teams').insert([payload]);
+      if (existingTeam) {
+        return showToast('Team name already registered for this event', 'error');
+      }
+      if (existingTeamError) throw existingTeamError;
 
-    if (error) {
-      return showToast('Registration failed: ' + error.message, 'error');
+      // Check for existing transaction ID
+      const { data: existingTxn, error: txnError } = await supabase
+        .from('teams')
+        .select('txn_id')
+        .eq('txn_id', txnId)
+        .maybeSingle();
+
+      if (existingTxn) {
+        return showToast('Transaction ID already used', 'error');
+      }
+      if (txnError) throw txnError;
+
+      // Find next available slot
+      const { data: usedSlots, error: slotsError } = await supabase
+        .from('teams')
+        .select('slot_number')
+        .eq('event_id', evId);
+
+      if (slotsError) throw slotsError;
+
+      const takenSlots = usedSlots.map(t => t.slot_number).filter(Boolean);
+      let availableSlot = 1;
+      
+      // Find first available slot between 1-25
+      while (takenSlots.includes(availableSlot) && availableSlot <= evData.maxTeams) {
+        availableSlot++;
+      }
+
+      if (availableSlot > evData.maxTeams) {
+        return showToast('Event is full - no slots available', 'error');
+      }
+
+      // Insert registration
+      const { error: insertError } = await supabase
+        .from('teams')
+        .insert({
+          team_name: teamName,
+          event_id: evId,
+          event_title: evData.title,
+          email,
+          phone,
+          txn_id: txnId,
+          fee: evData.entryFee,
+          members,
+          status: 'pending',
+          slot_number: availableSlot,
+          created_at: new Date().toISOString() // Added this line
+        });
+
+      if (insertError) throw insertError;
+
+      // Show slot number in the form display
+      const slotDisplay = document.getElementById('slotDisplay');
+      if (slotDisplay) {
+        slotDisplay.textContent = `Your slot number: ${availableSlot}`;
+        slotDisplay.style.display = 'block';
+        
+        // Hide after 5 seconds
+        setTimeout(() => {
+          slotDisplay.style.display = 'none';
+        }, 5000);
+      }
+      // Success
+      clearDraft();
+      regForm.reset();
+      eventSelect.value = '';
+      handleEntryFee();
+      showToast(`Registered! Your Slot Number: ${availableSlot}`);
+    } catch (error) {
+      console.error('Registration error:', error);
+      showToast('Registration failed, please try again', 'error');
     }
-
-    clearDraft(); // remove saved draft once submitted successfully
-    regForm.reset();
-    eventSelect.value = '';
-    handleEntryFee();
-    showToast('Registered successfully!');
   });
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ====== Nav & Misc ======
 if (hamburger) {
@@ -350,13 +425,6 @@ document.querySelectorAll('.acc-header').forEach(h => {
 window.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 });
-
-// // Clear form data on full page reload
-// window.addEventListener('load', () => {
-//   const form = document.getElementById('regForm');
-//   if (form) form.reset();
-// });
-
 
 // Year
 if (yearEl) {
