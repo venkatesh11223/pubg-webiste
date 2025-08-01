@@ -288,6 +288,9 @@ function handleEntryFee() {
   entryFeeEl.textContent = ev ? `₹${ev.entryFee}` : '—';
 }
 
+
+
+
 // ====== Submit Registration to Supabase ======
 if (regForm) {
   regForm.addEventListener('submit', async (e) => {
@@ -402,18 +405,57 @@ if (regForm) {
           slotDisplay.style.display = 'none';
         }, 5000);
       }
-      // Success
+
+      // --- NEW CODE STARTS HERE ---
+      // Send confirmation email via serverless function
+      let emailSentSuccessfully = false;
+      try {
+        const emailResponse = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            teamName: teamName,
+            email: email,
+            eventTitle: evData.title,
+            slotNumber: availableSlot,
+          }),
+        });
+
+        if (!emailResponse.ok) {
+          const errorData = await emailResponse.json();
+          console.error('Email sending failed on server:', errorData.error);
+          showToast('Registration successful, but email confirmation failed.', 'error');
+        } else {
+          emailSentSuccessfully = true;
+        }
+      } catch (emailError) {
+        console.error('Error calling email API:', emailError);
+        showToast('Registration successful, but email confirmation failed due to network error.', 'error');
+      }
+      // --- NEW CODE ENDS HERE ---
+
+      // Success - clear draft and reset form
       clearDraft();
       regForm.reset();
       eventSelect.value = '';
       handleEntryFee();
-      showToast(`Registered! Your Slot Number: ${availableSlot}`);
+
+      // Final toast message based on email status
+      if (emailSentSuccessfully) {
+        showToast(`Registered! Your Slot Number: ${availableSlot}. Confirmation email sent!`);
+      } else {
+        showToast(`Registered! Your Slot Number: ${availableSlot}. (Email confirmation could not be sent)`);
+      }
+
     } catch (error) {
       console.error('Registration error:', error);
       showToast('Registration failed, please try again', 'error');
     }
   });
 }
+
 
 
 
