@@ -13,10 +13,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 
   <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Initialize Supabase client
+    window.supabase = supabase.createClient(
+      'https://ebmsntitclqgjfvubzcl.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVibXNudGl0Y2xxZ2pmdnViemNsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MzYyOTYxNiwiZXhwIjoyMDY5MjA1NjE2fQ.UgaZMIqf-HuXfINdzxPOAjCcfrQF9PUVT-buw2OHuP8'
+    );
+  </script>
 
   <!-- Admin Logic -->
-  <script src="admin.js" defer></script>
+  <script src="admin.js"></script>
 </head>
 
 <body class="min-h-screen bg-gradient-to-b from-black via-zinc-900 to-black text-white flex items-center justify-center p-6">
@@ -26,24 +33,24 @@
     <h1 class="text-4xl font-bold text-center text-accent mb-8">Admin Dashboard</h1>
 
     <!-- LOGIN SECTION -->
-    <div id="login-section" class="space-y-4">
+    <div id="login-section" class="space-y-4 max-w-md mx-auto">
       <h2 class="text-2xl font-semibold text-center">Enter Admin Password</h2>
       <input type="password" id="adminPass"
-        class="w-full px-4 py-2 rounded bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-accent"
+        class="w-full px-4 py-3 rounded-lg bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-200"
         placeholder="Enter password" />
       <button onclick="checkAdminLogin()"
-        class="w-full bg-accent hover:bg-accent-dark text-black font-bold py-2 rounded transition duration-200">
+        class="w-full bg-accent hover:bg-accent-dark text-black font-bold py-3 rounded-lg transition-all duration-200 hover:scale-[1.02] active:scale-95">
         Login
       </button>
       <p id="loginError" class="text-red-500 text-center text-sm"></p>
     </div>
 
     <!-- DASHBOARD SECTION -->
-    <div id="dashboard" class="hidden mt-8 space-y-6">
+    <div id="dashboard" class="hidden mt-8 space-y-6 animate-fade-in">
       <div class="flex justify-between items-center">
         <h3 class="text-2xl font-semibold">Registered Teams</h3>
         <button onclick="exportToCSV()"
-          class="bg-accent hover:bg-accent-dark text-black font-bold py-2 px-4 rounded transition duration-200">
+          class="bg-accent hover:bg-accent-dark text-black font-bold py-2 px-4 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95">
           Export to CSV
         </button>
       </div>
@@ -54,6 +61,25 @@
 
   <!-- Accent Colors (inspired by your theme) -->
   <style>
+    html {
+      scrollbar-width: thin;
+      scrollbar-color: #ff9f1c #1a1a1a;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #ff9f1c;
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+    
     .text-accent {
       color: #ff9f1c;
     }
@@ -67,7 +93,7 @@
     }
 
     .animate-fade-in {
-      animation: fade-in 0.8s ease-out forwards;
+      animation: fade-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
 
     @keyframes fade-in {

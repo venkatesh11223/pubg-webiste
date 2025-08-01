@@ -126,7 +126,7 @@
       <p>Please pay the exact entry fee before submitting your registration form.</p>
       <p><strong>Entry Fee:</strong> <span id="entryFee">Loading...</span></p>
       <div class="upi-box">
-        <span id="upiId">battlezone@upi</span>
+        <span id="upiId">7975088072-2@ibl</span>
         <button class="copy-btn" onclick="copyUPI()">Copy</button>
       </div>
       <p>After successful payment, return and paste your UPI transaction ID.</p>
@@ -207,24 +207,26 @@
       });
     }
 
+    // Define events array (should match the one in app.js for consistency)
+    const events = [
+      {
+        id: 'ev1',
+        title: 'Sunday Showdown: BGMI Squad Battle – ₹1,200 Prize Pool!',
+        entryFee: 100
+      },
+      {
+        id: 'ev2',
+        title: 'PUBG Mobile Scrims — Friday Rush',
+        entryFee: 0
+      }
+    ];
+
     const selectedEventId = localStorage.getItem("selected_event_id");
     if (selectedEventId) {
-      const events = [
-        {
-          id: 'ev1',
-          title: 'PUBG Mobile Squad Cup',
-          entryFee: 200
-        },
-        {
-          id: 'ev2',
-          title: 'PUBG Mobile Scrims — Friday Rush',
-          entryFee: 100
-        }
-      ];
       const found = events.find(e => e.id === selectedEventId);
       document.getElementById("entryFee").textContent = found ? `₹${found.entryFee}` : '₹100';
     } else {
-      document.getElementById("entryFee").textContent = '₹100';
+      document.getElementById("entryFee").textContent = '₹100'; // Default if no event is selected
     }
   </script>
 </body>

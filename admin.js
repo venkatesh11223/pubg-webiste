@@ -1,10 +1,6 @@
 // ===== CONFIG =====
 const ADMIN_PASSWORD = "roxx_gaming";
-const SUPABASE_URL = "https://ebmsntitclqgjfvubzcl.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVibXNudGl0Y2xxZ2pmdnViemNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM2Mjk2MTYsImV4cCI6MjA2OTIwNTYxNn0.eQEwNT1-xaXszk5nPj2wCfDizJbkZObCX84BrDOPfP8";
-const SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVibXNudGl0Y2xxZ2pmdnViemNsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MzYyOTYxNiwiZXhwIjoyMDY5MjA1NjE2fQ.UgaZMIqf-HuXfINdzxPOAjCcfrQF9PUVT-buw2OHuP8";
-const client = window.supabase.createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
-
+const client = window.supabase; // Use the globally available Supabase client
 
 // Login Check
 function checkAdminLogin() {
@@ -39,6 +35,10 @@ async function loadTeams() {
           <th class="px-4 py-3 border-b border-zinc-700">Phone</th>
           <th class="px-4 py-3 border-b border-zinc-700">Txn ID</th>
           <th class="px-4 py-3 border-b border-zinc-700">Status</th>
+          <th class="px-4 py-3 border-b border-zinc-700">Members</th>
+          <th class="px-4 py-3 border-b border-zinc-700">Fee</th>
+          <th class="px-4 py-3 border-b border-zinc-700">Created At</th>
+          <th class="px-4 py-3 border-b border-zinc-700">Slot</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-zinc-800">
@@ -52,6 +52,10 @@ async function loadTeams() {
             <td class="px-4 py-2 font-semibold ${row.status === 'Paid' ? 'text-green-400' : 'text-yellow-400'}">
               ${row.status}
             </td>
+            <td class="px-4 py-2">${formatMembers(row.members)}</td>
+            <td class="px-4 py-2">₹${row.fee || '0'}</td>
+            <td class="px-4 py-2">${new Date(row.created_at).toLocaleString()}</td>
+            <td class="px-4 py-2">${row.slot_number || '-'}</td>
           </tr>
         `).join("")}
       </tbody>
@@ -59,8 +63,18 @@ async function loadTeams() {
   </div>
 `;
 
-
   document.getElementById("teamsTable").innerHTML = tableHTML;
+}
+
+// Format members from JSON
+function formatMembers(members) {
+  if (!members) return '-';
+  try {
+    const parsed = typeof members === 'string' ? JSON.parse(members) : members;
+    return parsed.map(m => `${m.name} (${m.pubg_id})`).join(', '); // Display member names with PUBG IDs
+  } catch {
+    return members;
+  }
 }
 
 // Export to CSV
@@ -73,7 +87,7 @@ function exportToCSV() {
     }
 
     const csvRows = [
-      ["Team Name", "Event", "Email", "Phone", "Txn ID", "Status"]
+      ["Team Name", "Event", "Email", "Phone", "Txn ID", "Status", "Members", "Fee", "Created At", "Slot"]
     ];
 
     data.forEach(row => {
@@ -83,7 +97,11 @@ function exportToCSV() {
         row.email,
         row.phone,
         row.txn_id,
-        row.status
+        row.status,
+        formatMembers(row.members),
+        row.fee || '0',
+        new Date(row.created_at).toLocaleString(),
+        row.slot_number || '-'
       ]);
     });
 

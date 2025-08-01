@@ -63,86 +63,107 @@
   </section>
 
   <!-- RULES -->
-  <section id="rules" class="section dark">
-    <div class="container">
-      <h2 class="section-title reveal">Rules & Format</h2>
-      <ul class="rules-list reveal">
-        <li>Team size: <strong>4 players</strong> (no more, no less).</li>
-        <li>Emulators are <strong>not allowed</strong> unless specified.</li>
-        <li>Hacks, scripts, mods = <strong>permanent ban</strong>.</li>
-        <li>Room ID & Password will be shared 10 minutes before the match.</li>
-        <li>Stream sniping / teaming is prohibited.</li>
-        <li>Organizer’s decision is final.</li>
-      </ul>
-    </div>
-  </section>
+<section id="rules" class="section dark">
+  <div class="container">
+    <h2 class="section-title reveal">Rules & Format</h2>
+    <ul class="rules-list reveal">
+      <li>Team size: <strong>4 players</strong> (no more, no less).</li>
+      <li>Solo or duo entries are <strong>not allowed</strong>.</li>
+      <li><strong>Emulators, tablets, or iPads</strong> are strictly prohibited.</li>
+      <li>Overall <strong>KD must be below 6.00</strong> for all players.</li>
+      <li><strong>Hacks, scripts, or mods</strong> = permanent ban.</li>
+      <li><strong>Teaming</strong> or stream sniping is strictly prohibited.</li>
+      <li>Room ID & Password will be shared <strong>1 hour before the match</strong>.</li>
+      <li>Join your assigned slot at least <strong>15 minutes before match time</strong>.</li>
+      <li>Winners must submit:
+        <ul>
+          <li>📸 Screenshot of WWCD result</li>
+          <li>🔋 Battery usage screenshot (last used apps)</li>
+        </ul>
+        via WhatsApp: <strong>7975088072</strong>
+      </li>
+      <li>Prize Pool: 🥇 <strong>₹800</strong> • 🥈 <strong>₹400</strong></li>
+      <li>Prizes will be sent via <strong>UPI</strong> after verification.</li>
+      <li><strong>No toxicity, spam, or abusive behavior</strong> allowed.</li>
+      <li><strong>Organizer’s decision is final</strong> in all disputes.</li>
+    </ul>
+  </div>
+</section>
 
-  <!-- REGISTER -->
-  <section id="register" class="section">
-    <div class="container">
-      <h2 class="section-title">Team Registration</h2>
-      <p class="muted">Fill out all fields. Team must have exactly 4 members. After paying via UPI, paste your
-        Transaction ID/UTR.</p>
 
-      <form id="regForm" class="reg-form" novalidate>
-        <div class="form-group">
-          <label for="eventId">Select Event</label>
-          <select id="eventId" required></select>
-        </div>
-        <div class="form-group">
-          <label for="teamName">Team Name</label>
-          <input type="text" id="teamName" placeholder="Enter team name" required />
-        </div>
-        <div class="players">
-          <h3>Players (4 required)</h3>
-          <div class="player-row">
-            <input type="text" placeholder="Player 1 Name" class="player-name" required />
-            <input type="text" placeholder="Player 1 PUBG ID" class="player-id" required />
-          </div>
-          <div class="player-row">
-            <input type="text" placeholder="Player 2 Name" class="player-name" required />
-            <input type="text" placeholder="Player 2 PUBG ID" class="player-id" required />
-          </div>
-          <div class="player-row">
-            <input type="text" placeholder="Player 3 Name" class="player-name" required />
-            <input type="text" placeholder="Player 3 PUBG ID" class="player-id" required />
-          </div>
-          <div class="player-row">
-            <input type="text" placeholder="Player 4 Name" class="player-name" required />
-            <input type="text" placeholder="Player 4 PUBG ID" class="player-id" required />
-          </div>
-        </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" placeholder="example@mail.com" required />
-          </div>
-          <div class="form-group">
-            <label for="phone">Phone (WhatsApp)</label>
-            <input type="tel" id="phone" placeholder="10-digit number" pattern="[0-9]{10}" required />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Entry Fee</label>
-          <p class="fee" id="entryFee">—</p>
-          <a href="payment.html" class="btn btn-small" onclick="saveSelectedEvent()">Pay Now (UPI)</a>
-        </div>
-        <div class="form-group">
-          <label for="txnId">UPI Transaction ID / UTR</label>
-          <input type="text" id="txnId" placeholder="Paste after payment" required />
-        </div>
-        <div class="form-group">
-          <button type="submit" class="btn btn-primary">Submit Registration</button>
-        </div>
-        <p class="form-note">Your data is now sent securely.</p>
-      </form>
-      <p id="slotDisplay" class="slot-display"
-        style="font-weight:bold; color:#00ffcc; font-size: 1.1rem; display:none; margin-top:1rem;">
-      </p>
+<!-- REGISTER -->
+<section id="register" class="section">
+  <div class="container">
+    <h2 class="section-title">Team Registration</h2>
+    <p class="muted">Fill out all fields. Team must have exactly 4 members. After paying via UPI, paste your Transaction ID/UTR.</p>
 
-      <div id="toast" class="toast"></div>
-    </div>
-  </section>
+    <form id="regForm" class="reg-form" novalidate>
+      <div class="form-group">
+        <label for="eventId">Select Event</label>
+        <select id="eventId" required>
+          <option value="ev1">Sunday Showdown: BGMI Squad Battle – ₹1,200 Prize Pool!</option>
+          <option value="ev2" disabled>Coming Soon: Another Event (Registration Closed)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="teamName">Team Name</label>
+        <input type="text" id="teamName" placeholder="Enter team name" required />
+      </div>
+      <div class="players">
+        <h3>Players (4 required)</h3>
+        <div class="player-row">
+          <input type="text" placeholder="Player 1 Name" class="player-name" required />
+          <input type="text" placeholder="Player 1 PUBG ID" class="player-id" required />
+        </div>
+        <div class="player-row">
+          <input type="text" placeholder="Player 2 Name" class="player-name" required />
+          <input type="text" placeholder="Player 2 PUBG ID" class="player-id" required />
+        </div>
+        <div class="player-row">
+          <input type="text" placeholder="Player 3 Name" class="player-name" required />
+          <input type="text" placeholder="Player 3 PUBG ID" class="player-id" required />
+        </div>
+        <div class="player-row">
+          <input type="text" placeholder="Player 4 Name" class="player-name" required />
+          <input type="text" placeholder="Player 4 PUBG ID" class="player-id" required />
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="example@mail.com" required />
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone (WhatsApp)</label>
+          <input type="tel" id="phone" placeholder="10-digit number" pattern="[0-9]{10}" required />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Entry Fee</label>
+        <p class="fee" id="entryFee">—</p>
+        <a href="payment.html" class="btn btn-small" onclick="return handlePaymentClick()">Pay Now (UPI)</a>
+      </div>
+      <div class="form-group">
+        <label for="txnId">UPI Transaction ID / UTR</label>
+        <input type="text" id="txnId" placeholder="Paste after payment" required />
+      </div>
+      <div class="form-group">
+        <input type="checkbox" id="agreeToRules" required style="width: auto; margin-right: 0.5rem;" />
+        <label for="agreeToRules" style="display: inline;">I agree to the <a href="#rules" style="color: var(--accent); text-decoration: underline;">Rules & Format</a></label>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit Registration</button>
+      </div>
+      <p class="form-note">Your data is now sent securely.</p>
+    </form>
+    <p id="slotDisplay" class="slot-display" style="font-weight:bold; color:#00ffcc; font-size: 1.1rem; display:none; margin-top:1rem;"></p>
+
+    <div id="toast" class="toast"></div>
+  </div>
+</section>
+
+
 
   <!-- LEADERBOARD / RESULTS -->
   <section id="leaderboard" class="section dark">

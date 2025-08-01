@@ -25,25 +25,31 @@ window.addEventListener('load', () => {
 
 // Sample events (edit these)
 const events = [
-  {
-    id: 'ev1',
-    title: 'PUBG Mobile Squad Cup',
-    date: '2025-08-10T18:00:00+05:30',
-    banner: 'assets/img/poster1.jpg',
-    entryFee: 200,
-    prizePool: 2000,
-    map: 'Erangel',
-    maxTeams: 25
+{
+  id: 'ev1',
+  title: 'Sunday Showdown: BGMI Squad Battle – ₹1,200 Prize Pool!',
+  date: '2025-08-03T19:00:00+05:30', // Sunday, 7 PM
+  banner: 'assets/img/poster4.jpeg',
+  entryFee: 100,
+  prizePool: 1200,
+  map: 'Erangel',
+  prizes: {
+    winner: 800,
+    runnerUp: 400
   },
+  maxTeams: 18
+},
+
+
   {
     id: 'ev2',
     title: 'PUBG Mobile Scrims — Friday Rush',
     date: '2025-08-15T21:00:00+05:30',
     banner: 'assets/img/poster2.jpg',
-    entryFee: 100,
-    prizePool: 1000,
+    entryFee: 0,
+    prizePool: 0,
     map: 'Miramar',
-    maxTeams: 25
+    maxTeams: 0
   }
 ];
 
@@ -229,18 +235,20 @@ function renderEvents() {
   eventsGrid.innerHTML = events.map(e => {
     return `
       <article class="event-card reveal">
-        <img src="${e.banner}" alt="${e.title}" class="event-banner" />
-        <div class="event-body">
-          <h3>${e.title}</h3>
-          <div class="event-meta">
-            <span>${formatDate(e.date)}</span>
-            <span class="countdown" data-countdown="${e.date}"></span>
-          </div>
-          <p>Entry: <strong>₹${e.entryFee}</strong> • Prize Pool: <strong>₹${e.prizePool}</strong></p>
-          <p>Map: ${e.map} • Max Teams: ${e.maxTeams}</p>
-          <a href="#register" class="btn btn-small btn-outline" data-ev="${e.id}">Register</a>
-        </div>
-      </article>
+  <img src="${e.banner}" alt="${e.title}" class="event-banner" />
+  <div class="event-body">
+    <h3>${e.title}</h3>
+    <div class="event-meta">
+      <span>${formatDate(e.date)}</span>
+      <span class="countdown" data-countdown="${e.date}"></span>
+    </div>
+    <p>Entry: <strong>₹${e.entryFee}</strong> • Prize Pool: <strong>₹${e.prizePool}</strong></p>
+    <p>Map: ${e.map} • Max Teams: ${e.maxTeams}</p>
+    <p>🏆 Winner: ₹${e.prizes?.winner} • 🥈 Runner-Up: ₹${e.prizes?.runnerUp}</p>
+    <a href="#register" class="btn btn-small btn-outline" data-ev="${e.id}">Register</a>
+  </div>
+</article>
+
     `;
   }).join('');
 
@@ -253,6 +261,7 @@ function renderEvents() {
         eventSelect.value = id;
         handleEntryFee();
         saveDraftDebounced();
+        localStorage.setItem("selected_event_id", id); // Save selected event ID
       }
     });
   });
@@ -265,6 +274,13 @@ function populateEventSelect() {
   if (!eventSelect) return;
   eventSelect.innerHTML = '<option value="" disabled selected>Select an event</option>' +
     events.map(e => `<option value="${e.id}">${e.title} — ₹${e.entryFee}</option>`).join('');
+
+  // Add event listener for change
+  eventSelect.addEventListener('change', () => {
+    handleEntryFee();
+    saveDraftDebounced();
+    localStorage.setItem("selected_event_id", eventSelect.value); // Save selected event ID
+  });
 }
 
 function handleEntryFee() {
@@ -277,7 +293,7 @@ if (regForm) {
   regForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const evId = eventSelect.value;
+    const evId = document.getElementById('eventId').value;
     const evData = events.find(e => e.id === evId);
     const teamName = document.getElementById('teamName').value.trim();
     const email = document.getElementById('email').value.trim();
@@ -297,6 +313,18 @@ if (regForm) {
     if (!txnId) return showToast('Enter UPI transaction ID', 'error');
 
     const members = playerNames.map((name, i) => ({ name, pubg_id: playerIds[i] }));
+
+    // Check if the selected event is the one that allows registration
+    if (evId === 'ev2') {
+      return showToast('Registration is currently closed for this event', 'error');
+    }
+
+    const agreeToRules = document.getElementById('agreeToRules'); // Reference to the checkbox
+
+    // Form validation for the new checkbox
+    if (!agreeToRules.checked) {
+      return showToast('You must agree to the Rules & Format to register', 'error');
+    }
 
     try {
       // Check for existing team name (case-sensitive)
@@ -334,7 +362,7 @@ if (regForm) {
 
       const takenSlots = usedSlots.map(t => t.slot_number).filter(Boolean);
       let availableSlot = 1;
-      
+
       // Find first available slot between 1-25
       while (takenSlots.includes(availableSlot) && availableSlot <= evData.maxTeams) {
         availableSlot++;
@@ -368,7 +396,7 @@ if (regForm) {
       if (slotDisplay) {
         slotDisplay.textContent = `Your slot number: ${availableSlot}`;
         slotDisplay.style.display = 'block';
-        
+
         // Hide after 5 seconds
         setTimeout(() => {
           slotDisplay.style.display = 'none';
@@ -386,6 +414,9 @@ if (regForm) {
     }
   });
 }
+
+
+
 
 
 
